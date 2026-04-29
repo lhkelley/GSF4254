@@ -73,25 +73,23 @@ for bam in *.nodup.bam; do
     echo "Variants generated for $bam -> $outfile"
 done
 ```
+Run the already-called variants from above (in the quasi VCF files) through this pipeline to count the number of variants:
 
 ```console
 #!/bin/bash
 
-# Loop over all rmdup VCF files
 for vcf in *_27Aug_rmdup.vcf; do
-    # Get sample name without .vcf
     sample=$(basename "$vcf" .vcf)
+    outfile="April29-2026-ELrerun/${sample}_variant-29Apr26.csv"
+    logfile="April29-2026-ELrerun/${sample}_variant-29Apr26.log"
 
-    # Define output file and log file
-    outfile="${sample}_variant.csv"
-    logfile="${sample}_variant.log"
-
-    # Run the python script with nohup in background
-    nohup python variant_updatedLHK073025.py \
+    nohup python3 variant_updatedEL080825.py \
         --v "$vcf" \
-        --snp c.elegans.WS275.snps.sorted.bed \
+        --snp /N/slate/lhkelley/GSF4254/sailor/c.elegans.WS275.snps.nostrand.sorted.bed \
         --o "$outfile" > "$logfile" 2>&1 &
 
-    echo "Started processing $vcf -> $outfile (logging to $logfile)"
+    while [ "$(jobs -r | wc -l)" -ge "$max_jobs" ]; do
+        sleep 1
+    done
 done
 ```

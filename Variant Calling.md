@@ -93,3 +93,47 @@ for vcf in *_27Aug_rmdup.vcf; do
     done
 done
 ```
+## Shorten file names
+
+```console
+for f in GSF4254-N2-rep*_Aligned.sortedByCoord.out.nodup.bam; do
+    rep=$(echo "$f" | grep -o 'rep[0-9]\+')
+    mv "$f" "N2_${rep}_nodup.bam"
+done
+```
+
+## Pile up the reads
+
+```console
+#!/bin/bash
+
+ref="assembly.fasta"
+
+for bam in *_nodup.bam; do
+    sample=$(basename "$bam" _nodup.bam)
+    outfile="${sample}_01May.vcf"
+    mpileup_file="${sample}_01May.mpileup.vcf.gz"
+
+    if [ -f "$outfile" ]; then
+        echo "Skipping $bam, output $outfile already exists."
+        continue
+    fi
+
+    echo "Processing $bam"
+
+    # Step 1: generate and save  mpileup (for troubleshooting and sanity checks)
+    bcftools mpileup -f "$ref" -a DP4 "$bam" -Ou \
+        | bcftools view -Oz -o "$mpileup_file"
+
+    bcftools index "$mpileup_file"
+
+    # Step 2: call variants from mpileup
+    bcftools call -mv -A -Ov "$mpileup_file" -o "$outfile"
+
+    echo "Variants generated for $bam -> $outfile"
+done
+```
+
+```console
+   
+```

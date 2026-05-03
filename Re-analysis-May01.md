@@ -147,6 +147,14 @@ for bam in *.bam; do
 done
 ```
 
+Output:
+```console
+(rnaseq) [lhkelley@i73 May3_EWexact]$ cat read_counts.txt 
+GSF4254-N2-rep1_S10_R1_001_Aligned.sortedByCoord.out.bam	39755097	5025145	12.64
+GSF4254-N2-rep2_S11_R1_001_Aligned.sortedByCoord.out.bam	32660880	4360273	13.35
+GSF4254-N2-rep3_S12_R1_001_Aligned.sortedByCoord.out.bam	84246559	6889472	8.18
+```
+
 # Variant calling
 
 ```mpileup``` will pile up the reads at each variant sites. The ```-a DP4``` refers counting/including the number of reads for the reference and alternative nucleotide, as well as the forward and reverse strand. So, there are 4 categories: reference/forward, reference/reverse, alternative/forward, and alternative/reverse (in that order).

@@ -184,3 +184,26 @@ for bam in *.nodup.bam; do
     echo "Variants generated for $bam -> $outfile"
 done
 ```
+
+Clean up and calculate variant frequency:
+```console
+#!/bin/bash
+
+# Loop over all rmdup VCF files
+for vcf in *.vcf; do
+    # Get sample name without .vcf
+    sample=$(basename "$vcf" .vcf)
+
+    # Define output file and log file
+    outfile="${sample}_variant.csv"
+    logfile="${sample}_variant.log"
+
+    # Run the python script --> if your are including EVERYTHING, not just variants, your files will be huge and this must be submitted as a job...
+    /N/slate/lhkelley/GSF4254/varientcall/variant_updatedEL080825.py \
+        --v "$vcf" \
+        --snp /N/slate/lhkelley/GSF4254/sailor/c.elegans.WS275.snps.nostrand.sorted.bed \
+        --o "$outfile" > "$logfile" 2>&1 &
+
+    echo "Started processing $vcf -> $outfile (logging to $logfile)"
+done
+```

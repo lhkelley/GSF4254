@@ -117,6 +117,8 @@ ESTIMATED_LIBRARY_SIZE: 0
 
 Count the number of reads that were removed and compare to original number of reads:
 ```console
+echo -e "Sample\tMapped_Reads_Before\tMapped_Reads_After\tPct_Remaining" > read_counts.txt
+
 # Loop through all original BAMs
 for bam in *.bam; do
     # skip files that are already .nodup.bam
@@ -150,6 +152,7 @@ done
 Output:
 ```console
 (rnaseq) [lhkelley@i73 May3_EWexact]$ cat read_counts.txt 
+Sample	Mapped_Reads_Before	Mapped_Reads_After	Pct_Remaining
 GSF4254-N2-rep1_S10_R1_001_Aligned.sortedByCoord.out.bam	39755097	5025145	12.64
 GSF4254-N2-rep2_S11_R1_001_Aligned.sortedByCoord.out.bam	32660880	4360273	13.35
 GSF4254-N2-rep3_S12_R1_001_Aligned.sortedByCoord.out.bam	84246559	6889472	8.18

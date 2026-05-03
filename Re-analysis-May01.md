@@ -54,6 +54,67 @@ for i in *.bam; do
 done
 ```
 
+Output:
+```console
+samtools markdup: warning, unable to calculate estimated library size. Read pairs 0 should be greater than duplicate pairs 0, which should both be non zero.
+
+COMMAND: samtools markdup -r -s GSF4254-N2-rep1_S10_R1_001_Aligned.sortedByCoord.out.bam GSF4254-N2-rep1_S10_R1_001_Aligned.sortedByCoord.out.nodup.bam
+READ: 39755097
+WRITTEN: 5025145
+EXCLUDED: 0
+EXAMINED: 39755097
+PAIRED: 0
+SINGLE: 39755097
+DUPLICATE PAIR: 0
+DUPLICATE SINGLE: 34729952
+DUPLICATE PAIR OPTICAL: 0
+DUPLICATE SINGLE OPTICAL: 0
+DUPLICATE NON PRIMARY: 0
+DUPLICATE NON PRIMARY OPTICAL: 0
+DUPLICATE PRIMARY TOTAL: 34729952
+DUPLICATE TOTAL: 34729952
+ESTIMATED_LIBRARY_SIZE: 0
+
+samtools markdup: warning, unable to calculate estimated library size. Read pairs 0 should be greater than duplicate pairs 0, which should both be non zero.
+
+COMMAND: samtools markdup -r -s GSF4254-N2-rep2_S11_R1_001_Aligned.sortedByCoord.out.bam GSF4254-N2-rep2_S11_R1_001_Aligned.sortedByCoord.out.nodup.bam
+READ: 32660880
+WRITTEN: 4360273
+EXCLUDED: 0
+EXAMINED: 32660880
+PAIRED: 0
+SINGLE: 32660880
+DUPLICATE PAIR: 0
+DUPLICATE SINGLE: 28300607
+DUPLICATE PAIR OPTICAL: 0
+DUPLICATE SINGLE OPTICAL: 0
+DUPLICATE NON PRIMARY: 0
+DUPLICATE NON PRIMARY OPTICAL: 0
+DUPLICATE PRIMARY TOTAL: 28300607
+DUPLICATE TOTAL: 28300607
+ESTIMATED_LIBRARY_SIZE: 0
+
+samtools markdup: warning, unable to calculate estimated library size. Read pairs 0 should be greater than duplicate pairs 0, which should both be non zero.
+
+COMMAND: samtools markdup -r -s GSF4254-N2-rep3_S12_R1_001_Aligned.sortedByCoord.out.bam GSF4254-N2-rep3_S12_R1_001_Aligned.sortedByCoord.out.nodup.bam
+READ: 84246559
+WRITTEN: 6889472
+EXCLUDED: 0
+EXAMINED: 84246559
+PAIRED: 0
+SINGLE: 84246559
+DUPLICATE PAIR: 0
+DUPLICATE SINGLE: 77357087
+DUPLICATE PAIR OPTICAL: 0
+DUPLICATE SINGLE OPTICAL: 0
+DUPLICATE NON PRIMARY: 0
+DUPLICATE NON PRIMARY OPTICAL: 0
+DUPLICATE PRIMARY TOTAL: 77357087
+DUPLICATE TOTAL: 77357087
+ESTIMATED_LIBRARY_SIZE: 0
+```
+
+
 Count the number of reads that were removed and compare to original number of reads:
 ```console
 # Loop through all original BAMs

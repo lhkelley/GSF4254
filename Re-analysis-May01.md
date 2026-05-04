@@ -240,25 +240,51 @@ Output is now millions of rows and not thousands:
   299265165 total
 ```
 
-Clean up and calculate variant frequency (now in ```noV``` directory):
+Clean up and calculate variant frequency (now in ```noV``` directory). You have to submit this as a Slurm job because the terminal will run out of memory.
+
+Save this as ```variant_cleanup.sh``` script using ```nano```:
 ```console
 #!/bin/bash
+#SBATCH -A r01267
+#SBATCH --job-name=variant_run
+#SBATCH --output=variant_%j.log
+#SBATCH --error=variant_%j.err
+#SBATCH --partition=gpu
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=180G
+#SBATCH --time=04:00:00
 
-# Loop over all rmdup VCF files
+echo "=========================================================="
+echo "Job started at: $(date)"
+echo "Running on node: $(hostname)"
+echo "SLURM job ID: $SLURM_JOB_ID"
+echo "=========================================================="
+
 for vcf in *.vcf; do
-    # Get sample name without .vcf
     sample=$(basename "$vcf" .vcf)
-
-    # Define output file and log file
     outfile="${sample}_variant.csv"
     logfile="${sample}_variant.log"
 
-    # Run the python script --> if your are including EVERYTHING, not just variants, your files will be huge and this must be submitted as a job...
     /N/slate/lhkelley/GSF4254/varientcall/variant_updatedEL080825.py \
         --v "$vcf" \
         --snp /N/slate/lhkelley/GSF4254/sailor/c.elegans.WS275.snps.nostrand.sorted.bed \
-        --o "$outfile" > "$logfile" 2>&1 &
+        --o "$outfile" > "$logfile" 2>&1
 
-    echo "Started processing $vcf -> $outfile (logging to $logfile)"
+    echo "Finished $vcf -> $outfile"
 done
+
+echo "Job finished at: $(date)"
+```
+Submit job:
+```console
+sbatch variant_cleanup.sh
+```
+
+Number of rows for the variant ```.csv``` output files:
+```console
+(rnaseq) [lhkelley@i73 noV]$ wc -l *.csv
+  31996897 GSF4254-N2-rep1_S10_R1_001_Aligned.sortedByCoord.out_rmdup_noV_variant.csv
+  31688365 GSF4254-N2-rep2_S11_R1_001_Aligned.sortedByCoord.out_rmdup_noV_variant.csv
+  37654137 GSF4254-N2-rep3_S12_R1_001_Aligned.sortedByCoord.out_rmdup_noV_variant.csv
+ 101339399 total
 ```

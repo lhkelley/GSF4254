@@ -207,3 +207,26 @@ for vcf in *.vcf; do
     echo "Started processing $vcf -> $outfile (logging to $logfile)"
 done
 ```
+
+# Trying the variant calling but removing the -v flag
+
+```console
+# Loop over all deduplicated BAM files
+for bam in *.nodup.bam; do
+    # Get sample name without extension
+    sample=$(basename "$bam" .nodup.bam)
+    outfile="noV/${sample}_rmdup_noV.vcf"
+
+    # Skip if output exists
+    if [ -f "$outfile" ]; then
+        echo "Skipping $bam, output $outfile already exists."
+        continue
+    fi
+
+    # Generate pileup and annotate DP4, ignore indels
+    bcftools mpileup -Ou -f "$ref" -a DP4 "$bam" | \
+    bcftools call -m -A -Ov -o "$outfile" # No -v flag!
+
+    echo "Variants generated for $bam -> $outfile"
+done
+```

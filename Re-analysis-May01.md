@@ -230,3 +230,35 @@ for bam in *.nodup.bam; do
     echo "Variants generated for $bam -> $outfile"
 done
 ```
+
+Output is now millions of rows and not thousands:
+```console
+(rnaseq) [lhkelley@i73 noV]$ wc -l *.vcf
+   99681127 GSF4254-N2-rep1_S10_R1_001_Aligned.sortedByCoord.out_rmdup_noV.vcf
+   99451191 GSF4254-N2-rep2_S11_R1_001_Aligned.sortedByCoord.out_rmdup_noV.vcf
+  100132847 GSF4254-N2-rep3_S12_R1_001_Aligned.sortedByCoord.out_rmdup_noV.vcf
+  299265165 total
+```
+
+Clean up and calculate variant frequency (now in ```noV``` directory):
+```console
+#!/bin/bash
+
+# Loop over all rmdup VCF files
+for vcf in *.vcf; do
+    # Get sample name without .vcf
+    sample=$(basename "$vcf" .vcf)
+
+    # Define output file and log file
+    outfile="${sample}_variant.csv"
+    logfile="${sample}_variant.log"
+
+    # Run the python script --> if your are including EVERYTHING, not just variants, your files will be huge and this must be submitted as a job...
+    /N/slate/lhkelley/GSF4254/varientcall/variant_updatedEL080825.py \
+        --v "$vcf" \
+        --snp /N/slate/lhkelley/GSF4254/sailor/c.elegans.WS275.snps.nostrand.sorted.bed \
+        --o "$outfile" > "$logfile" 2>&1 &
+
+    echo "Started processing $vcf -> $outfile (logging to $logfile)"
+done
+```

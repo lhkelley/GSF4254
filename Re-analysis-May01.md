@@ -453,3 +453,62 @@ for bam in *712*.nodup.bam; do
     echo "Variants generated for $bam -> $outfile"
 done
 ```
+
+Number of rows in each variant file:
+```console
+(rnaseq) [lhkelley@i73 noV]$ wc -l *712*.vcf
+   99632042 GSF4254-712-rep1_S1_R1_001_Aligned.sortedByCoord.out_rmdup_noV.vcf
+   99859192 GSF4254-712-rep2_S2_R1_001_Aligned.sortedByCoord.out_rmdup_noV.vcf
+   99612855 GSF4254-712-rep3_S3_R1_001_Aligned.sortedByCoord.out_rmdup_noV.vcf
+  299104089 total
+```
+Clean up and calculate variant frequency (now in ```noV``` directory). You have to submit this as a Slurm job because the terminal will run out of memory.
+
+Save this as ```variant_cleanup.sh``` script using ```nano```:
+```console
+#!/bin/bash
+#SBATCH -A r01267
+#SBATCH --job-name=variant_run
+#SBATCH --output=variant_%j.log
+#SBATCH --error=variant_%j.err
+#SBATCH --partition=gpu
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=180G
+#SBATCH --time=04:00:00
+
+echo "=========================================================="
+echo "Job started at: $(date)"
+echo "Running on node: $(hostname)"
+echo "SLURM job ID: $SLURM_JOB_ID"
+echo "=========================================================="
+
+for vcf in *712*.vcf; do
+    sample=$(basename "$vcf" .vcf)
+    outfile="${sample}_variant.csv"
+    logfile="${sample}_variant.log"
+
+    /N/slate/lhkelley/GSF4254/varientcall/variant_updatedEL080825.py \
+        --v "$vcf" \
+        --snp /N/slate/lhkelley/GSF4254/sailor/c.elegans.WS275.snps.nostrand.sorted.bed \
+        --o "$outfile" > "$logfile" 2>&1
+
+    echo "Finished $vcf -> $outfile"
+done
+
+echo "Job finished at: $(date)"
+```
+
+Submit job:
+```console
+sbatch variant_cleanup.sh
+```
+
+Number of rows for the variant ```.csv``` output files:
+```console
+(rnaseq) [lhkelley@i73 noV]$ wc -l *712*.csv
+  32509128 GSF4254-712-rep1_S1_R1_001_Aligned.sortedByCoord.out_rmdup_noV_variant.csv
+  35762478 GSF4254-712-rep2_S2_R1_001_Aligned.sortedByCoord.out_rmdup_noV_variant.csv
+  33279497 GSF4254-712-rep3_S3_R1_001_Aligned.sortedByCoord.out_rmdup_noV_variant.csv
+ 101551103 total
+```
+

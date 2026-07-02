@@ -1,7 +1,11 @@
 ## Alignment
 
-Copy ```annotation.gtf``` and ```assembly.fasta``` to ```May3_EWexact```.
-Keeping fastq files in ```GSF4254``` and will pull from there.
+Download genome reference file from WormBase server.
+
+```console
+ASSEMBLY='https://downloads.wormbase.org/releases/WS275/species/c_elegans/PRJNA13758/c_elegans.PRJNA13758.WS275.genomic.fa.gz'
+curl $ASSEMBLY | gunzip > ./genome/assembly.fasta
+```
 
 ```console
 conda activate rnaseq

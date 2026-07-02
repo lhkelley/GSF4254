@@ -162,57 +162,11 @@ GSF4254-N2-rep2_S11_R1_001_Aligned.sortedByCoord.out.bam	32660880	4360273	13.35
 GSF4254-N2-rep3_S12_R1_001_Aligned.sortedByCoord.out.bam	84246559	6889472	8.18
 ```
 
-## Variant calling - WRONG
+## Trying the variant calling but removing the -v flag (CORRECT)
 
 ```mpileup``` will pile up the reads at each variant sites. The ```-a DP4``` refers counting/including the number of reads for the reference and alternative nucleotide, as well as the forward and reverse strand. So, there are 4 categories: reference/forward, reference/reverse, alternative/forward, and alternative/reverse (in that order).
 
 ```call``` is actually doing the variant calling. The ```-m``` flag is saying to use the multiallelic calling model. ```-v``` means only include variant sites, not sites where all counts match the reference. The ```-A``` flag means to keep all alternative positions, even low frequency or weakly supported variants.
-
-```console
-# Loop over all deduplicated BAM files
-for bam in *.nodup.bam; do
-    # Get sample name without extension
-    sample=$(basename "$bam" .nodup.bam)
-    outfile="${sample}_rmdup.vcf"
-
-    # Skip if output exists
-    if [ -f "$outfile" ]; then
-        echo "Skipping $bam, output $outfile already exists."
-        continue
-    fi
-
-    # Generate pileup and annotate DP4, ignore indels
-    bcftools mpileup -Ou -f "$ref" -a DP4 "$bam" | \
-    bcftools call -mv -A -Ov -o "$outfile"
-
-    echo "Variants generated for $bam -> $outfile"
-done
-```
-
-Clean up and calculate variant frequency:
-```console
-#!/bin/bash
-
-# Loop over all rmdup VCF files
-for vcf in *.vcf; do
-    # Get sample name without .vcf
-    sample=$(basename "$vcf" .vcf)
-
-    # Define output file and log file
-    outfile="${sample}_variant.csv"
-    logfile="${sample}_variant.log"
-
-    # Run the python script --> if your are including EVERYTHING, not just variants, your files will be huge and this must be submitted as a job...
-    /N/slate/lhkelley/GSF4254/varientcall/variant_updatedEL080825.py \
-        --v "$vcf" \
-        --snp /N/slate/lhkelley/GSF4254/sailor/c.elegans.WS275.snps.nostrand.sorted.bed \
-        --o "$outfile" > "$logfile" 2>&1 &
-
-    echo "Started processing $vcf -> $outfile (logging to $logfile)"
-done
-```
-
-## Trying the variant calling but removing the -v flag (CORRECT)
 
 ```console
 # Loop over all deduplicated BAM files
@@ -235,7 +189,7 @@ for bam in *.nodup.bam; do
 done
 ```
 
-Output is now millions of rows and not thousands:
+Output is now millions of rows (and not thousands) (I had previous not used the -v flag):
 ```console
 (rnaseq) [lhkelley@i73 noV]$ wc -l *.vcf
    99681127 GSF4254-N2-rep1_S10_R1_001_Aligned.sortedByCoord.out_rmdup_noV.vcf
